@@ -6,7 +6,18 @@ from .db import engine, get_db
 
 from passlib.context import CryptContext
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins. You can specify a list of origins.
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
