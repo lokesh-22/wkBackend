@@ -26,3 +26,10 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class OTPSendRequest(BaseModel):
+    phone_number: str
+
+class OTPLoginRequest(BaseModel):
+    phone_number: str
+    otp: str

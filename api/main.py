@@ -60,3 +60,15 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     access_token = auth.create_access_token(data={"sub": str(db_user.id)})  # Use user ID as subject
     
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+
+
+@app.post("/send-otp/")
+def send_otp_endpoint(request: schemas.OTPSendRequest):
+    auth.send_otp(request.phone_number)
+    return {"message": "OTP sent successfully"}
+
+@app.post("/login-with-otp/")
+def login_with_otp_endpoint(request: schemas.OTPLoginRequest):
+    return auth.login_with_otp(request.phone_number, request.otp)
