@@ -65,7 +65,14 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
 
 
 @app.post("/send-otp/")
-def send_otp_endpoint(request: schemas.OTPSendRequest):
+def send_otp_endpoint(request: schemas.OTPSendRequest, db: Session = Depends(get_db)):
+    # Check if user with the provided phone number exists in the database
+    db_user = db.query(models.User).filter(models.User.phone == request.phone_number).first()
+    
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User with this phone number does not exist")
+
+    # If user exists, send the OTP
     auth.send_otp(request.phone_number)
     return {"message": "OTP sent successfully"}
 
