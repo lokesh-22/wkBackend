@@ -31,3 +31,6 @@ def create_user(db: Session, user: schemas.UserCreate):
         db.rollback()       # Rollback if there’s an error, no ID is consumed
         print(f"Error creating user: {e}")
         return None
+
+def get_user(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()
