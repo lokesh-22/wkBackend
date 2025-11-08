@@ -74,11 +74,13 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
 
 
 
-
 @app.post("/send-otp/")
 def send_otp_endpoint(request: schemas.OTPSendRequest, db: Session = Depends(get_db)):
+    # Remove the +91 prefix if it exists
+    phone_number = request.phone_number.lstrip('+91')
+    
     # Check if user with the provided phone number exists in the database
-    db_user = db.query(models.User).filter(models.User.phone == request.phone_number).first()
+    db_user = db.query(models.User).filter(models.User.phone == phone_number).first()
     
     if db_user is None:
         raise HTTPException(status_code=404, detail="User with this phone number does not exist")
@@ -86,6 +88,7 @@ def send_otp_endpoint(request: schemas.OTPSendRequest, db: Session = Depends(get
     # If user exists, send the OTP
     auth.send_otp(request.phone_number)
     return {"message": "OTP sent successfully"}
+
 
 @app.post("/login-with-otp/")
 def login_with_otp_endpoint(request: schemas.OTPLoginRequest):

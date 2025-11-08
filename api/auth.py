@@ -13,6 +13,7 @@ load_dotenv()
 TWILIO_SID = os.getenv("TWILIO_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+TWILIO_VERIFY_SERVICE_SID = os.getenv("TWILIO_VERIFY_SERVICE_SID")
 
 
 
@@ -27,16 +28,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 otp_storage = {}
 
 def send_otp(phone_number: str):
-    otp = f"{random.randint(100000, 999999)}"  # Generate a 6-digit OTP
-    otp_storage[phone_number] = {"otp": otp, "expiry": datetime.now() + timedelta(minutes=5)}
+   
+    # Initiate the OTP verification process via Twilio Verify
+    verification = client.verify.v2.services(TWILIO_VERIFY_SERVICE_SID).verifications.create(to=phone_number, channel="sms")
 
-    message = client.messages.create(
-        body=f"Your OTP is {otp}",
-        from_=TWILIO_PHONE_NUMBER,
-        to=phone_number,
-    )
-
-    return message.sid  # Optionally return message SID for tracking
+    return verification.sid  # Optionally return SID for tracking
 
 def verify_otp(phone_number: str, otp: str):
     if phone_number in otp_storage:
